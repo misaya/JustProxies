@@ -1,0 +1,88 @@
+﻿@using Microsoft.Extensions.Options
+@using JustProxies.Proxy.Core
+@using JustProxies.Proxy.Setup.Core
+@inherits LayoutComponentBase
+@inject IWebProxyServer WebProxyServer;
+@inject IWebProxyTool WebProxyTool;
+@inject IOptions<WebProxyServerOptions> WebProxyServerOptions;
+
+<div class="bb-page">
+
+    <Sidebar @ref="_sidebar"
+             IconName="IconName.Ethernet"
+             Title=" Just Proxies "
+             DataProvider="SidebarDataProvider"/>
+
+    <main>
+        <div class="bb-top-row px-4 d-flex justify-content-end">
+            <Toasts class="p-3" Messages="_messages" Placement="ToastsPlacement.BottomRight"/>
+            <Switch Label="启动代理" @bind-Value="IsEnabled"/>
+        </div>
+
+        <article class="content px-4">
+            <div class="py-2">@Body</div>
+        </article>
+    </main>
+
+</div>
+
+@code {
+    private Sidebar _sidebar = null!;
+    private IEnumerable<NavItem> _navItems = null!;
+    private readonly List<ToastMessage> _messages = [];
+
+    private bool IsEnabled
+    {
+        get => WebProxyTool.GetWebProxy().IsEnabled;
+        set => SwitchWebProxy(value);
+    }
+
+    private void SwitchWebProxy(bool isEnabled)
+    {
+        var result = false;
+        if (isEnabled)
+        {
+            WebProxyTool.SetWebProxy();
+            result = WebProxyTool.EnableProxy();
+        }
+        else
+        {
+            result = WebProxyTool.DisableProxy();
+        }
+
+        var info = WebProxyTool.GetWebProxy();
+        _messages.Add(new ToastMessage
+        {
+            Type = result ? ToastType.Success : ToastType.Info,
+            Title = (isEnabled ? "启动" : "关闭") + "本地代理成功",
+            HelpText = DateTime.Now.ToString("HH:mm:ss"),
+            Message = info.ToString()
+        });
+        StateHasChanged();
+    }
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (_navItems is null)
+            _navItems = GetNavItems();
+        return await Task.FromResult(request.ApplyTo(_navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        _navItems = new List<NavItem>
+        {
+            new() { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match = NavLinkMatch.All },
+            new() { Id = "2", Href = "/counter", IconName = IconName.PlusSquareFill, Text = "Counter" },
+            new() { Id = "3", Href = "/weather", IconName = IconName.Table, Text = "Fetch Data" }
+        };
+        return _navItems;
+    }
+
+}
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
