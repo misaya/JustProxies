@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using JustProxies.Proxy.Core;
@@ -8,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace JustProxies.Proxy;
 
-[DebuggerDisplay("Address={_options.Address};Port={_options.Port}")]
+//[DebuggerDisplay("Address={_options.Address};Port={_options.Port}")]
 public class WebProxyServer : IWebProxyServer, IDisposable
 {
     private readonly ILogger<WebProxyServer> _logger;
@@ -39,30 +38,29 @@ public class WebProxyServer : IWebProxyServer, IDisposable
                 var tcpClient = await _listener.AcceptTcpClientAsync(cancellationToken);
                 var stream = tcpClient.GetStream();
                 var total = new List<byte>();
-                while (stream.DataAvailable)
+                do
                 {
                     var buffer = new byte[1024];
                     var length = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
                     total.AddRange(buffer.Take(length));
-                }
+                } while (stream.DataAvailable);
 
                 if (total.Count == 0)
+                {
+                    stream.Close();
+                    tcpClient.Close();
                     continue;
-                HttpContext httpContext = null!;
+                }
+
                 try
                 {
-                    httpContext = new HttpContext(tcpClient, total, stream);
-                    this.OnRequestReceived?.Invoke(this, new WebProxyServerRequestReceivedEventArgs(httpContext));
+                    var httpContext = new HttpContext(tcpClient, total, stream);
                     await Process(httpContext);
                 }
                 catch (HttpRequestException e)
                 {
                     _logger.LogError(e, "Error handling request.");
                     await stream.WriteAsync(Encoding.UTF8.GetBytes(e.Message), cancellationToken);
-                }
-                finally
-                {
-                    httpContext?.Close();
                 }
             }
         }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
@@ -76,6 +74,7 @@ public class WebProxyServer : IWebProxyServer, IDisposable
         if (context.Request.RawUrl.Contains("fenghui.xu"))
         {
             context.Response.Write("hello,fenghui!");
+            context.Close();
             return;
         }
 
@@ -85,14 +84,15 @@ public class WebProxyServer : IWebProxyServer, IDisposable
         await stream.WriteAsync(context.Request.RawData.ToArray());
         var buffer = new byte[1024];
         var total = new List<byte>();
-        while (stream.DataAvailable)
+        do
         {
-            var length = await stream.ReadAsync(buffer);
+            var length = await stream.ReadAsync(buffer, 0, buffer.Length);
             total.AddRange(buffer.Take(length));
-        }
+        } while (stream.DataAvailable);
 
         _logger.LogInformation("返回:" + total.ToArray().Length + " bytes");
         await context.Response.WriteAsync(total.ToArray());
+        context.Close();
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
