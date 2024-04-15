@@ -14,24 +14,14 @@ public class HttpResponse
 
     public Stream Stream => _stream;
 
-    public async Task WriteAsync(string data)
+    public async Task WriteAsync(string data, Encoding encoding)
     {
-        var bytes = Encoding.UTF8.GetBytes(data);
+        var bytes = encoding.GetBytes(data);
         await _stream.WriteAsync(bytes);
     }
 
     public async Task WriteAsync(byte[] bytes)
     {
         await _stream.WriteAsync(bytes);
-    }
-
-    public void Write(byte[] bytes)
-    {
-        _stream.Write(bytes);
-    }
-
-    public void Write(string text)
-    {
-        _stream.Write(Encoding.ASCII.GetBytes(text));
     }
 }

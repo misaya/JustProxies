@@ -41,21 +41,19 @@ public class WebProxyServer : IWebProxyServer, IDisposable
                 do
                 {
                     var buffer = new byte[1024];
-                    var length = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+                    var length = await stream.ReadAsync(buffer, cancellationToken);
                     total.AddRange(buffer.Take(length));
                 } while (stream.DataAvailable);
-
                 if (total.Count == 0)
                 {
                     stream.Close();
                     tcpClient.Close();
                     continue;
                 }
-
                 try
                 {
                     var httpContext = new HttpContext(tcpClient, total, stream);
-                    await Process(httpContext);
+                    this.OnRequestReceived?.Invoke(this, new WebProxyServerRequestReceivedEventArgs(httpContext));
                 }
                 catch (HttpRequestException e)
                 {
@@ -68,41 +66,12 @@ public class WebProxyServer : IWebProxyServer, IDisposable
         this.OnStarted?.Invoke(this, WebProxyServerEventArgs.CreateStartedEvent(_options));
         return Task.CompletedTask;
     }
-
-    private async Task Process(HttpContext context)
-    {
-        if (context.Request.RawUrl.Contains("fenghui.xu"))
-        {
-            context.Response.Write("hello,fenghui!");
-            context.Close();
-            return;
-        }
-
-        _logger.LogInformation("请求:\r\n" + Encoding.ASCII.GetString(context.Request.RawData.ToArray()));
-        using var client = new TcpClient(context.Request.Url.Host, context.Request.Url.Port);
-        await using var stream = client.GetStream();
-        await stream.WriteAsync(context.Request.RawData.ToArray());
-        var buffer = new byte[1024];
-        var total = new List<byte>();
-        do
-        {
-            var length = await stream.ReadAsync(buffer, 0, buffer.Length);
-            total.AddRange(buffer.Take(length));
-        } while (stream.DataAvailable);
-
-        _logger.LogInformation("返回:" + total.ToArray().Length + " bytes");
-        await context.Response.WriteAsync(total.ToArray());
-        context.Close();
-    }
-
     public Task StopAsync(CancellationToken cancellationToken)
     {
         _listener.Stop();
         this.OnStopped?.Invoke(this, WebProxyServerEventArgs.CreateStoppedEvent(_options));
         return Task.CompletedTask;
     }
-
-
     public void Dispose()
     {
         _listener.Dispose();
