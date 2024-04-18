@@ -1,71 +1,54 @@
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Net;
 using System.Net.Sockets;
-using System.Text;
+using JustProxies.Proxy.Exts;
 
 namespace JustProxies.Proxy.Core;
 
-[DebuggerDisplay("来自{RemoteEndPoint}的{HttpMethod}请求{RawUrl}")]
+[DebuggerDisplay("{HttpMethod} {RawUrl}")]
 public class HttpRequest
 {
-    internal HttpRequest(TcpClient client, List<byte> totalBytes)
+    internal HttpRequest(NetworkStream requestStream)
     {
-        try
+        using var memoryStream = requestStream.ReadToMemoryStream();
+        this.RequestRawData = memoryStream.ToArray();
+        using var reader = new StreamReader(memoryStream);
+        var requestLine = reader.ReadLine();
+        Debug.WriteLine(requestLine);
+        var requestLineSplit = requestLine?.Split(' ');
+        this.HttpMethod = new HttpMethod(requestLineSplit!.First());
+        this.RawUrl = requestLineSplit![1];
+        this.Version = new Version(requestLineSplit[2].Split('/')[1]);
+        if (HttpMethod == HttpMethod.Connect)
         {
-            this.RawData = totalBytes;
-            using var stream = new MemoryStream(totalBytes.ToArray());
-            using var reader = new StreamReader(stream);
-            var requestLine = reader.ReadLine();
-            var requestLineSplit = requestLine?.Split(' ');
-            if (requestLineSplit?.FirstOrDefault() is { } method)
-            {
-                this.HttpMethod = new HttpMethod(method);
-                this.RawUrl = requestLineSplit[1];
-                this.Version = requestLineSplit[2];
-
-                if (HttpMethod == HttpMethod.Connect)
-                {
-                    this.Url = this.RawUrl.EndsWith("443")
-                        ? new Uri("https://" + this.RawUrl)
-                        : new Uri("http://" + this.RawUrl);
-                }
-                else
-                {
-                    this.Url = new Uri(this.RawUrl);
-                }
-            }
-
-            while (reader.ReadLine() is { } headerLine && !string.IsNullOrWhiteSpace(headerLine))
-            {
-                this.Headers.Add(headerLine);
-            }
-
-            this.Body = reader.ReadToEnd();
-            this.RemoteEndPoint = client.Client.RemoteEndPoint as IPEndPoint ?? null!;
+            this.Url = this.RawUrl.EndsWith("443")
+                ? new Uri("https://" + this.RawUrl)
+                : new Uri("http://" + this.RawUrl);
         }
-        catch (Exception exception)
+        else
         {
-            throw new HttpRequestException("Invalid request", exception, HttpStatusCode.BadRequest);
+            this.Url = new Uri(this.RawUrl);
         }
+
+        while (reader.ReadLine() is { } headerLine &&
+               !string.IsNullOrWhiteSpace(headerLine))
+        {
+            this.Headers.Add(headerLine);
+            Debug.WriteLine(headerLine);
+        }
+
+        this.Body = reader.ReadToEnd();
     }
 
-    public string Version { get; private set; } = null!;
-    public string RawUrl { get; private set; } = null!;
-    public Uri Url { get; private set; } = null!;
-    public string Body { get; private set; }
-    public HttpMethod HttpMethod { get; private set; } = null!;
-    public HttpRequestHeaders Headers { get; private set; } = [];
-    public IPEndPoint RemoteEndPoint { get; private set; } = null!;
-    public List<byte> RawData { get; private set; }
+    public ReadOnlyMemory<byte> RequestRawData { get; }
+    public Version Version { get; }
+    public string RawUrl { get; }
+    public Uri Url { get; }
+    public string Body { get; }
+    public HttpMethod HttpMethod { get; }
+    public HttpRequestHeaders Headers { get; } = [];
 
     public override string ToString()
     {
-        var sb = new StringBuilder();
-        sb.AppendLine($"{this.HttpMethod} {this.RawUrl} {this.Version}");
-        sb.AppendLine($"{this.Headers}");
-        sb.AppendLine();
-        sb.AppendLine(this.Body);
-        return sb.ToString();
+        return $"{this.HttpMethod} {this.RawUrl} {this.Version}";
     }
 }

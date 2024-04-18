@@ -23,7 +23,7 @@ public static class RuleConditionExt
         
         var value = ruleCondition.Target switch
         {
-            RuleConditionTarget.RemoteIP => context.Request.RemoteEndPoint.ToString(),
+            RuleConditionTarget.RemoteIP => context.RemoteEndPoint.ToString(),
             RuleConditionTarget.Method => context.Request.HttpMethod.ToString(),
             RuleConditionTarget.Url => context.Request.Url == null ? "" : context.Request.Url!.ToString(),
             RuleConditionTarget.Body => context.Request.Body,

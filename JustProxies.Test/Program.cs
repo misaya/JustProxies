@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
+using System.Text;
 using JustProxies.Proxy;
 using JustProxies.Proxy.Core;
 using Microsoft.Extensions.Logging;
@@ -22,24 +24,24 @@ public class Program
             Proxy = new WebProxy("127.0.0.1:1234", true, ["https://*"]),
             UseProxy = true,
         });
+        client.Timeout = TimeSpan.FromSeconds(10000);
         var server = new WebProxyServer(logger, options);
-        server.OnRequestReceived += OnRequestReceived;
         await server.StartAsync(CancellationToken.None);
-        while (Console.ReadLine() is { })
+        await Task.Delay(2000);
+        try
         {
-            try
+            for (int i = 0; i < 1000; i++)
             {
-                var result = await client.GetAsync("http://wiki.17usoft.com/");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
+                var url = $"http://localhost:8880/hello/{i}/world/{i}";
+                var text = await client.GetStringAsync(url);
+                Console.WriteLine(text);
             }
         }
-    }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
 
-    private static Task OnRequestReceived(IWebProxyServer server, WebProxyServerRequestReceivedEventArgs args)
-    {
-        return Task.CompletedTask;
+        Console.ReadLine();
     }
 }

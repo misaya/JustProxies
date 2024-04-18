@@ -1,16 +1,22 @@
-using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Net;
 using System.Net.Sockets;
+using JustProxies.Proxy.Exts;
 
 namespace JustProxies.Proxy.Core;
 
-public class HttpContext(TcpClient client, List<byte> totalBytes, NetworkStream stream)
+public class HttpContext  
 {
-    public HttpRequest Request { get; private set; } = new HttpRequest(client, totalBytes);
-    public HttpResponse Response { get; private set; } = new HttpResponse(stream);
-
-    public void Close()
+    public HttpContext(TcpClient client)
     {
-        stream.Close();
-        client.Close();
+        var stream = client.GetStream();
+        this.Request = new HttpRequest(stream);
+        this.Response = new HttpResponse(stream);
+        this.RemoteEndPoint = client.Client.RemoteEndPoint as IPEndPoint ?? null!;
     }
+
+    public IPEndPoint RemoteEndPoint { get; }
+    public HttpRequest Request { get; }
+    public HttpResponse Response { get; }
+    public bool Ishandled { get; set; } = false;
 }

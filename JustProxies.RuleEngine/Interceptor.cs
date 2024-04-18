@@ -1,4 +1,5 @@
-﻿using JustProxies.Proxy.Core;
+﻿using System.Net.Sockets;
+using JustProxies.Proxy.Core;
 using JustProxies.RuleEngine.Core;
 using JustProxies.RuleEngine.Exts;
 using Microsoft.Extensions.Logging;
@@ -22,8 +23,10 @@ public class Interceptor
     {
         var rules = _management.GetEnabledRules();
         var ruleData = rules.FirstOrDefault(p => p.IsMatch(e.HttpContext));
-      
-        await ruleData.Invoke(e.HttpContext);
+        if (ruleData != null)
+        {
+            await ruleData.Invoke(e.HttpContext);
+        }
     }
 
     private Task Server_OnResponseReceived(IWebProxyServer server, WebProxyServerResponseReceivedEventArgs e)

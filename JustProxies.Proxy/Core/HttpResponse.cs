@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 
@@ -5,23 +6,18 @@ namespace JustProxies.Proxy.Core;
 
 public class HttpResponse
 {
-    private readonly NetworkStream _stream;
-
-    internal HttpResponse(NetworkStream stream)
+    internal HttpResponse(Stream responseStream)
     {
-        this._stream = stream;
+        this.ResponseSteam = responseStream;
+        Debug.WriteLine("ResponseSteam.CanRead:{0}", this.ResponseSteam.CanRead);
+        Debug.WriteLine("ResponseSteam.CanWrite:{0}", this.ResponseSteam.CanWrite);
     }
 
-    public Stream Stream => _stream;
+    public Stream ResponseSteam { get; }
 
     public async Task WriteAsync(string data, Encoding encoding)
     {
         var bytes = encoding.GetBytes(data);
-        await _stream.WriteAsync(bytes);
-    }
-
-    public async Task WriteAsync(byte[] bytes)
-    {
-        await _stream.WriteAsync(bytes);
+        await ResponseSteam.WriteAsync(bytes);
     }
 }
