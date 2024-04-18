@@ -27,17 +27,17 @@ public class WebProxyServer : IWebProxyServer, IDisposable
         _options.ThrowExceptionIfInvalid();
         _listener = new TcpListener(_options.GetIPAddress(), _options.Port);
     }
-
+ 
     public ConcurrentDictionary<int, TcpClient> ClientPool = new ConcurrentDictionary<int, TcpClient>();
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
         _listener.Start();
         OnStarted?.Invoke(this, WebProxyServerEventArgs.CreateStartedEvent(_options));
-        _logger.LogInformation("正在启动服务.");
+        _logger?.LogInformation("正在启动服务.");
         var thread = new Thread(async () =>
         {
-            _logger.LogInformation("服务已启动.");
+            _logger?.LogInformation("服务已启动.");
 
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -62,7 +62,7 @@ public class WebProxyServer : IWebProxyServer, IDisposable
 
         var stopwatch = Stopwatch.StartNew();
         var from = tcpClient.Client.RemoteEndPoint;
-        _logger.LogInformation("#{key}->接收到来自{from}的请求", key, from);
+        _logger?.LogInformation("#{key}->接收到来自{from}的请求", key, from);
         var stream = tcpClient.GetStream();
         try
         {
@@ -81,7 +81,7 @@ public class WebProxyServer : IWebProxyServer, IDisposable
         finally
         {
             stopwatch.Stop();
-            _logger.LogInformation("#{key}->完成到来自{from}的请求，耗时:{time}毫秒", key, from,
+            _logger?.LogInformation("#{key}->完成到来自{from}的请求，耗时:{time}毫秒", key, from,
                 stopwatch.Elapsed.TotalMilliseconds);
             await Task.Delay(5000);
             tcpClient.Close();
