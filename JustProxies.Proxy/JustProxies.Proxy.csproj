@@ -13,7 +13,6 @@
     </ItemGroup>
     <ItemGroup>
         <Folder Include="obj\Debug\net8.0\"/>
-        <Folder Include="Rule\"/>
     </ItemGroup>
     <ItemGroup>
         <Compile Remove="obj\**"/>
