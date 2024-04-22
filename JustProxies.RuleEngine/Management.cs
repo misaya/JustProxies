@@ -1,27 +1,36 @@
 using JustProxies.RuleEngine.Core;
 using JustProxies.RuleEngine.Core.Models;
+using LiteDB;
 
 namespace JustProxies.RuleEngine;
 
-public class Management : IManagement
+public class Management : IManagement, IDisposable
 {
-   public bool AddRule(RuleData ruleData)
-   {
-      throw new NotImplementedException();
-   }
+    private readonly DataBase _dataBase = DataBase.Instance;
 
-   public bool DeleteRule(Guid ruleId)
-   {
-      throw new NotImplementedException();
-   }
+    public void Add(RulePackage package)
+    {
+        var col = _dataBase.GetCollection<RulePackage>();
+        col.EnsureIndex(x => x.RuleId, true);
+        col.Insert(package);
+    }
 
-   public bool AddRuleCondition(Guid ruleId, RuleCondition condition)
-   {
-      throw new NotImplementedException();
-   }
+    public bool Delete(Guid ruleId)
+    {
+        var col = _dataBase.GetCollection<RulePackage>();
+        var result = col.DeleteMany(p => p.RuleId == ruleId);
+        return result == 1;
+    }
 
-   public List<RuleData> GetEnabledRules()
-   {
-      throw new NotImplementedException();
-   }
+    public List<RulePackage> GetEnabled()
+    {
+        var col = _dataBase.GetCollection<RulePackage>();
+        var result = col.Find(p => p.IsEnabled == true);
+        return result.ToList();
+    }
+
+    public void Dispose()
+    {
+        _dataBase.Dispose();
+    }
 }

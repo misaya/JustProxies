@@ -1,6 +1,6 @@
 namespace JustProxies.RuleEngine.Core.Models;
 
-public enum RuleConditionMethod
+public enum RuleItemMethod
 {
     /// <summary>
     ///     等于

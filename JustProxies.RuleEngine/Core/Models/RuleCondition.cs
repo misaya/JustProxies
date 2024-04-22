@@ -1,8 +1,19 @@
 namespace JustProxies.RuleEngine.Core.Models;
 
-public class RuleCondition
+public enum RuleCondition
 {
-    public RuleConditionTarget Target { get; set; } = RuleConditionTarget.Body;
-    public RuleConditionMethod Method { get; set; } = RuleConditionMethod.Contains;
-    public string RawData { get; set; } = string.Empty;
+    /// <summary>
+    /// 满足所有
+    /// </summary>
+    All,
+
+    /// <summary>
+    /// 满足任一条件
+    /// </summary>
+    Any,
+
+    /// <summary>
+    /// 不满足任一条件
+    /// </summary>
+    None
 }

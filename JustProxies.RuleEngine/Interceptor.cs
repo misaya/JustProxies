@@ -21,12 +21,12 @@ public class Interceptor
 
     private async Task Server_OnRequestReceived(IHttpProxyServer server, HttpRequestReceivedEventArgs e)
     {
-        var rules = _management.GetEnabledRules();
-        var ruleData = rules.FirstOrDefault(p => p.IsMatch(e.HttpContext));
-        if (ruleData != null)
+        var packages = _management.GetEnabled();
+        var package = packages.FirstOrDefault(p => p.IsMatch(e.HttpContext));
+        if (package != null)
         {
-            _logger.LogInformation($"来自{e.HttpContext.RemoteEndPoint}的请求{e.HttpContext.Request.ToString()}被截获处理");
-            await ruleData.Invoke(e.HttpContext);
+            _logger.LogInformation($"来自{e.HttpContext.RemoteEndPoint}的请求{e.HttpContext.Request}被截获处理");
+            await package.ApplyRuleAction(e.HttpContext);
         }
     }
 

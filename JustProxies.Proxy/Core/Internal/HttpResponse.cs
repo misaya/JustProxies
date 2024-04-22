@@ -15,7 +15,7 @@ public class HttpResponse
     public Memory<byte> ResponseRawData { get; set; }
     public bool IsHandled { get; set; } = false;
 
-    public async Task WriteToStreamAsync()
+    public async Task SubmitAsync()
     {
         if (ResponseRawData.IsEmpty || !_responseSteam.CanWrite) return;
 

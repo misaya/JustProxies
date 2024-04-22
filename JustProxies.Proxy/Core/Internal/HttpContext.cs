@@ -1,8 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
-using JustProxies.Proxy.Core.Internal;
 
-namespace JustProxies.Proxy.Core;
+namespace JustProxies.Proxy.Core.Internal;
 
 public class HttpContext
 {

@@ -1,11 +1,11 @@
 using System.Diagnostics;
-using JustProxies.Proxy.Core;
+using JustProxies.Proxy.Core.Internal;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 
 namespace JustProxies.RuleEngine.Core.Models;
 
 [DebuggerDisplay("执行代码: {Code}")]
-public class RuleScript(string code)
+public class RuleItemScript(string code)
 {
     public readonly string Code = code;
 

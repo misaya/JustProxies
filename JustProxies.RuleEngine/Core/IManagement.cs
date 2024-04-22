@@ -4,11 +4,9 @@ namespace JustProxies.RuleEngine.Core;
 
 public interface IManagement
 {
-    bool AddRule(RuleData ruleData);
+    void Add(RulePackage package);
 
-    bool DeleteRule(Guid ruleId);
+    bool Delete(Guid ruleId);
 
-    bool AddRuleCondition(Guid ruleId, RuleCondition condition);
-
-    List<RuleData> GetEnabledRules();
+    List<RulePackage> GetEnabled();
 }

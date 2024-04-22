@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using JustProxies.Proxy.Core;
 using JustProxies.Proxy.Core.Events;
+using JustProxies.Proxy.Core.Internal;
 using JustProxies.Proxy.Core.Options;
 using JustProxies.Proxy.Exts;
 using Microsoft.Extensions.Logging;
@@ -37,11 +38,11 @@ public class HttpProxyServer : IHttpProxyServer, IDisposable
     public Task StartAsync(CancellationToken cancellationToken)
     {
         _listener.Start();
-        var thread = new Thread(async () =>
+        var thread = new Thread(() =>
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var tcpClient = await _listener.AcceptTcpClientAsync(cancellationToken);
+                var tcpClient = _listener.AcceptTcpClient();
                 var hash = tcpClient.GetHashCode();
                 _clientPool.TryAdd(hash, tcpClient);
                 ThreadPool.QueueUserWorkItem(HandleTcpClient, hash);
@@ -96,26 +97,26 @@ public class HttpProxyServer : IHttpProxyServer, IDisposable
         OnRequestReceived?.Invoke(this, new HttpRequestReceivedEventArgs(httpContext));
         if (!httpContext.Response.IsHandled)
         {
-            //若拦截器未处理请求，则穿透请求
             using var client = new TcpClient(httpContext.Request.Url.Host, httpContext.Request.Url.Port);
             await using var stream = client.GetStream();
             await stream.WriteAsync(httpContext.Request.RequestRawData.ToArray());
+            //没有拦截，则实时的传输流，不经过内存缓存，提交性能；
             if (OnResponseReceived == null)
             {
-                //没有拦截，则实时的传输流，不经过内存缓存，提交性能；
                 httpContext.Response.LinkExternalStream(stream);
                 httpContext.Response.IsHandled = true;
                 client.Close();
                 return;
             }
+
             //存在拦截，则先将数据读取到缓冲区中，触发事件（事件中允许对缓存区数据进行篡改），最终传输到原客户端流；
             using var memoryStream = stream.ReadAll();
             httpContext.Response.ResponseRawData = memoryStream.ToArray();
-            OnResponseReceived
-                ?.Invoke(this, new HttpResponseReceivedEventArgs(httpContext));
-            await httpContext.Response.WriteToStreamAsync();
             httpContext.Response.IsHandled = true;
             client.Close();
         }
+
+        OnResponseReceived?.Invoke(this, new HttpResponseReceivedEventArgs(httpContext));
+        await httpContext.Response.SubmitAsync();
     }
 }

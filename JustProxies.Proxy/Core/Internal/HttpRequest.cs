@@ -32,13 +32,15 @@ public class HttpRequest
             Debug.WriteLine(headerLine);
         }
 
+        Position = (int)memoryStream.Position;
         Body = reader.ReadToEnd();
     }
 
+    private int Position { get; }
     public ReadOnlyMemory<byte> RequestRawData { get; }
     public Version Version { get; }
-    public string RawUrl { get; }
-    public Uri Url { get; }
+    public string RawUrl { get; private set; }
+    public Uri Url { get; private set; }
     public string Body { get; }
     public HttpMethod HttpMethod { get; }
     public HttpRequestHeaders Headers { get; } = [];
@@ -48,5 +50,20 @@ public class HttpRequest
     public override string ToString()
     {
         return $"{HttpMethod} {RawUrl} {Version}";
+    }
+
+    public HttpRequestMessage GetHttpRequestMessage()
+    {
+        var message = new HttpRequestMessage(this.HttpMethod, this.Url);
+        foreach (var header in this.Headers)
+        {
+            message.Headers.Add(header.Key, header.Value);
+        }
+
+        var data = this.RequestRawData.ToArray().Skip(this.Position).ToArray();
+        using var stream = new MemoryStream(data);
+        message.Content = new StreamContent(stream);
+        message.Version = this.Version;
+        return message;
     }
 }

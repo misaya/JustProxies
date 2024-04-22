@@ -1,6 +1,6 @@
 namespace JustProxies.RuleEngine.Core.Models;
 
-public enum RuleConditionTarget
+public enum RuleItemTarget
 {
     /// <summary>
     /// 请求来源IP地址

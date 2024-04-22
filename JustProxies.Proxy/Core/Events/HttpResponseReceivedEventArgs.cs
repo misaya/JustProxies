@@ -1,3 +1,5 @@
+using JustProxies.Proxy.Core.Internal;
+
 namespace JustProxies.Proxy.Core.Events;
 
 public record HttpResponseReceivedEventArgs
