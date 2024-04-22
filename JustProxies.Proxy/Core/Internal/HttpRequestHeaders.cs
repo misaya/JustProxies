@@ -1,6 +1,6 @@
 using System.Net.Http.Headers;
 
-namespace JustProxies.Proxy.Core;
+namespace JustProxies.Proxy.Core.Internal;
 
 public class HttpRequestHeaders : HttpHeaders
 {
@@ -14,7 +14,7 @@ public class HttpRequestHeaders : HttpHeaders
             return this.Any(p => p.Key == key && p.Value.Contains(value));
         }
 
-        return this.Contains(key);
+        return Contains(key);
     }
 
     public void Add(string headerLine)
@@ -22,12 +22,9 @@ public class HttpRequestHeaders : HttpHeaders
         var headerSplit = headerLine.Split([':'], 2);
         if (headerSplit.Length == 2)
         {
-            if (headerSplit[1].Contains(';'))
-            {
-                this.TryAddWithoutValidation(headerSplit[0], headerSplit[1].Split(';'));
-            }
+            if (headerSplit[1].Contains(';')) TryAddWithoutValidation(headerSplit[0], headerSplit[1].Split(';'));
 
-            this.TryAddWithoutValidation(headerSplit[0], headerSplit[1]);
+            TryAddWithoutValidation(headerSplit[0], headerSplit[1]);
         }
     }
 

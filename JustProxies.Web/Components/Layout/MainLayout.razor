@@ -1,10 +1,11 @@
 ﻿@using Microsoft.Extensions.Options
 @using JustProxies.Proxy.Core
+@using JustProxies.Proxy.Core.Options
 @using JustProxies.Proxy.Setup.Core
 @inherits LayoutComponentBase
-@inject IWebProxyServer WebProxyServer;
+@inject IHttpProxyServer HttpProxyServer;
 @inject IWebProxyTool WebProxyTool;
-@inject IOptions<WebProxyServerOptions> WebProxyServerOptions;
+@inject IOptions<HttpProxyServerOptions> WebProxyServerOptions;
 
 <div class="bb-page">
 

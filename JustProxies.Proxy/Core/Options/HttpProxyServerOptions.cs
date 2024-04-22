@@ -1,10 +1,10 @@
 using System.Net;
 
-namespace JustProxies.Proxy.Core;
+namespace JustProxies.Proxy.Core.Options;
 
-public class WebProxyServerOptions
+public class HttpProxyServerOptions
 {
-    public const string OptionsName = nameof(WebProxyServerOptions);
+    public const string OptionsName = nameof(HttpProxyServerOptions);
     public string NetworkInterface { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
     public int Port { get; set; } = 0;
@@ -16,9 +16,6 @@ public class WebProxyServerOptions
 
     public void ThrowExceptionIfInvalid()
     {
-        if (!IPEndPoint.TryParse($"{this.Address}:{this.Port}", out _))
-        {
-            throw new ArgumentException($"配置错误");
-        }
+        if (!IPEndPoint.TryParse($"{Address}:{Port}", out _)) throw new ArgumentException("配置错误");
     }
 }

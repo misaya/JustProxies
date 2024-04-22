@@ -1,18 +1,19 @@
 using System.Net;
 using JustProxies.Proxy;
 using JustProxies.Proxy.Core;
+using JustProxies.Proxy.Core.Options;
 using JustProxies.Test;
 using Microsoft.Extensions.Options;
 
 namespace JustProxies.XUnit;
 
-public class WebProxyServerTest
+public class HttpProxyServerTest
 {
     [Fact]
     public async Task TestRequestProxy()
     {
-        var logger = new ConsoleLogger<WebProxyServer>();
-        var options = new OptionsWrapper<WebProxyServerOptions>(new WebProxyServerOptions()
+        var logger = new ConsoleLogger<HttpProxyServer>();
+        var options = new OptionsWrapper<HttpProxyServerOptions>(new HttpProxyServerOptions()
         {
             Address = "127.0.0.1",
             Port = 1234,
@@ -21,7 +22,7 @@ public class WebProxyServerTest
         var webServerHost = "http://127.0.0.1:" + Random.Shared.Next(8000, 9999) + "/";
         var webServer = new WebServer();
         webServer.Start(webServerHost);
-        var proxyServer = new WebProxyServer(logger, options);
+        var proxyServer = new HttpProxyServer(logger, options);
         await proxyServer.StartAsync(CancellationToken.None);
         var client = new HttpClient(new HttpClientHandler()
         {

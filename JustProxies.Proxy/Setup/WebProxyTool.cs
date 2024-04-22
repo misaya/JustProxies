@@ -1,4 +1,4 @@
-using JustProxies.Proxy.Core;
+using JustProxies.Proxy.Core.Options;
 using JustProxies.Proxy.Setup.Core;
 using JustProxies.Proxy.Setup.Implements;
 using Microsoft.Extensions.Logging;
@@ -9,10 +9,10 @@ namespace JustProxies.Proxy.Setup;
 public class WebProxyTool : IWebProxyTool
 {
     private readonly ILogger<WebProxyTool> _logger;
-    private readonly IOptions<WebProxyServerOptions> _options;
+    private readonly IOptions<HttpProxyServerOptions> _options;
     private readonly IWebProxyToolImpl _tool;
 
-    public WebProxyTool(ILogger<WebProxyTool> logger, IOptions<WebProxyServerOptions> options)
+    public WebProxyTool(ILogger<WebProxyTool> logger, IOptions<HttpProxyServerOptions> options)
     {
         _logger = logger;
         _options = options;

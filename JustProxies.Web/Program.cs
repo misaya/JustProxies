@@ -1,5 +1,6 @@
 using JustProxies.Proxy;
 using JustProxies.Proxy.Core;
+using JustProxies.Proxy.Core.Options;
 using JustProxies.Proxy.Setup;
 using JustProxies.Proxy.Setup.Core;
 using JustProxies.RuleEngine;
@@ -17,12 +18,12 @@ public class Program
             .AddJsonFile("appsettings.json", false, true)
             .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true);
 
-        builder.Services.Configure<WebProxyServerOptions>(
-            builder.Configuration.GetSection(WebProxyServerOptions.OptionsName));
+        builder.Services.Configure<HttpProxyServerOptions>(
+            builder.Configuration.GetSection(HttpProxyServerOptions.OptionsName));
         builder.Services.AddSingleton<IWebProxyTool, WebProxyTool>();
-        builder.Services.AddSingleton<IWebProxyServer, WebProxyServer>();
+        builder.Services.AddSingleton<IHttpProxyServer, HttpProxyServer>();
         builder.Services.AddSingleton<Interceptor>();
-        builder.Services.AddHostedService<IWebProxyServer>(p => p.GetRequiredService<IWebProxyServer>());
+        builder.Services.AddHostedService<IHttpProxyServer>(p => p.GetRequiredService<IHttpProxyServer>());
 
         builder.Services.AddBlazorBootstrap();
         builder.Services.AddRazorComponents()
