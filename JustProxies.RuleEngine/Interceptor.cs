@@ -32,6 +32,7 @@ public class Interceptor
 
     private Task Server_OnResponseReceived(IHttpProxyServer server, HttpResponseReceivedEventArgs e)
     {
+        _logger.LogInformation($"来自{e.HttpContext.RemoteEndPoint}的请求{e.HttpContext.Request}被已响应");
         return Task.CompletedTask;
     }
 }
