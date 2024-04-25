@@ -4,7 +4,7 @@ using LiteDB;
 
 namespace JustProxies.RuleEngine;
 
-public class Management : IManagement, IDisposable
+public class RuleManagement : IRuleManagement, IDisposable
 {
     private readonly DataBase _dataBase = DataBase.Instance;
 

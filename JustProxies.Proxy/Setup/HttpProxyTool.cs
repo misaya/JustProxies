@@ -6,13 +6,13 @@ using Microsoft.Extensions.Options;
 
 namespace JustProxies.Proxy.Setup;
 
-public class WebProxyTool : IWebProxyTool
+public class HttpProxyTool : IHttpProxyTool
 {
-    private readonly ILogger<WebProxyTool> _logger;
+    private readonly ILogger<HttpProxyTool> _logger;
     private readonly IOptions<HttpProxyServerOptions> _options;
     private readonly IWebProxyToolImpl _tool;
 
-    public WebProxyTool(ILogger<WebProxyTool> logger, IOptions<HttpProxyServerOptions> options)
+    public HttpProxyTool(ILogger<HttpProxyTool> logger, IOptions<HttpProxyServerOptions> options)
     {
         _logger = logger;
         _options = options;

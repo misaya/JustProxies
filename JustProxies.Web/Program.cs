@@ -20,9 +20,9 @@ public class Program
 
         builder.Services.Configure<HttpProxyServerOptions>(
             builder.Configuration.GetSection(HttpProxyServerOptions.OptionsName));
-        builder.Services.AddSingleton<IWebProxyTool, WebProxyTool>();
+        builder.Services.AddSingleton<IHttpProxyTool, HttpProxyTool>();
         builder.Services.AddSingleton<IHttpProxyServer, HttpProxyServer>();
-        builder.Services.AddSingleton<Interceptor>();
+        builder.Services.AddSingleton<HttpInterceptor>();
         builder.Services.AddHostedService<IHttpProxyServer>(p => p.GetRequiredService<IHttpProxyServer>());
 
         builder.Services.AddBlazorBootstrap();

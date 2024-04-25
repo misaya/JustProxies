@@ -1,6 +1,6 @@
 namespace JustProxies.Proxy.Setup.Core;
 
-public interface IWebProxyTool : IWebProxyToolImpl
+public interface IHttpProxyTool : IWebProxyToolImpl
 {
     public bool SetWebProxy();
 }

@@ -4,7 +4,7 @@
 @using JustProxies.Proxy.Setup.Core
 @inherits LayoutComponentBase
 @inject IHttpProxyServer HttpProxyServer;
-@inject IWebProxyTool WebProxyTool;
+@inject IHttpProxyTool HttpProxyTool;
 @inject IOptions<HttpProxyServerOptions> WebProxyServerOptions;
 
 <div class="bb-page">
@@ -34,7 +34,7 @@
 
     private bool IsEnabled
     {
-        get => WebProxyTool.GetWebProxy().IsEnabled;
+        get => HttpProxyTool.GetWebProxy().IsEnabled;
         set => SwitchWebProxy(value);
     }
 
@@ -43,15 +43,15 @@
         var result = false;
         if (isEnabled)
         {
-            WebProxyTool.SetWebProxy();
-            result = WebProxyTool.EnableProxy();
+            HttpProxyTool.SetWebProxy();
+            result = HttpProxyTool.EnableProxy();
         }
         else
         {
-            result = WebProxyTool.DisableProxy();
+            result = HttpProxyTool.DisableProxy();
         }
 
-        var info = WebProxyTool.GetWebProxy();
+        var info = HttpProxyTool.GetWebProxy();
         _messages.Add(new ToastMessage
         {
             Type = result ? ToastType.Success : ToastType.Info,

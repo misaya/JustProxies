@@ -2,7 +2,7 @@ using JustProxies.RuleEngine.Core.Models;
 
 namespace JustProxies.RuleEngine.Core;
 
-public interface IManagement
+public interface IRuleManagement
 {
     void Add(RulePackage package);
 

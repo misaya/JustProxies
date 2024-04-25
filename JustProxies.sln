@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustProxies.Web", "JustProx
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustProxies.RuleEngine", "JustProxies.RuleEngine\JustProxies.RuleEngine.csproj", "{0E85DBA6-88F8-40C0-99E9-E261DCF192AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustProxies.XUnit", "JustProxies.XUnit\JustProxies.XUnit.csproj", "{661C0995-E543-48B6-BE89-53FADC51F5D9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustProxies.Test", "JustProxies.Test\JustProxies.Test.csproj", "{82961FB8-B363-4944-B277-DBC080326057}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,9 +26,9 @@ Global
 		{0E85DBA6-88F8-40C0-99E9-E261DCF192AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E85DBA6-88F8-40C0-99E9-E261DCF192AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E85DBA6-88F8-40C0-99E9-E261DCF192AF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{661C0995-E543-48B6-BE89-53FADC51F5D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{661C0995-E543-48B6-BE89-53FADC51F5D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{661C0995-E543-48B6-BE89-53FADC51F5D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{661C0995-E543-48B6-BE89-53FADC51F5D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82961FB8-B363-4944-B277-DBC080326057}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82961FB8-B363-4944-B277-DBC080326057}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82961FB8-B363-4944-B277-DBC080326057}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82961FB8-B363-4944-B277-DBC080326057}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
