@@ -8,5 +8,7 @@ public interface IRuleManagement
 
     bool Delete(Guid ruleId);
 
+    bool DeleteAll();
+
     List<RulePackage> GetEnabled();
 }

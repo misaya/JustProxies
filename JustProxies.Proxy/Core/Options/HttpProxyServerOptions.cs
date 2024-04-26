@@ -5,9 +5,9 @@ namespace JustProxies.Proxy.Core.Options;
 public class HttpProxyServerOptions
 {
     public const string OptionsName = nameof(HttpProxyServerOptions);
-    public string NetworkInterface { get; set; } = string.Empty;
-    public string Address { get; set; } = string.Empty;
-    public int Port { get; set; } = 0;
+    public string NetworkInterface { get; init; } = string.Empty;
+    public string Address { get; init; } = string.Empty;
+    public int Port { get; init; } = 0;
 
     public IPAddress GetIPAddress()
     {

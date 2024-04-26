@@ -49,7 +49,7 @@ public class HttpRequest
 
     public override string ToString()
     {
-        return $"{HttpMethod} {RawUrl} {Version}";
+        return $"{HttpMethod} {RawUrl} HTTP/{Version}";
     }
 
     public HttpRequestMessage GetHttpRequestMessage()

@@ -28,7 +28,11 @@ public static class RulePackageExt
             }
             case RuleActionType.ResponseCustomizeContent:
             {
-                var bytes = Encoding.UTF8.GetBytes(package.Action.Resource);
+                var firstLine =
+                    $"HTTP/1.1 200 OK\nProxy:JustProxies\nProxyRule:{package.RuleId}\nProxyName:{package.RuleName}\n";
+                var text = firstLine + "\n" + package.Action.Resource;
+
+                var bytes = Encoding.UTF8.GetBytes(text);
                 context.Response.ResponseRawData = bytes;
                 context.Response.IsHandled = true;
                 break;

@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Sockets;
 using JustProxies.Proxy.Core;
 using JustProxies.Proxy.Core.Events;
@@ -17,14 +18,15 @@ public class HttpProxyServer : IHttpProxyServer, IDisposable
     private readonly TcpListener _listener;
     private readonly ILogger<HttpProxyServer> _logger;
 
+    public HttpProxyServerOptions Options { get; private set; }
+
     public HttpProxyServer(ILogger<HttpProxyServer> logger, IOptions<HttpProxyServerOptions> options,
         IHttpInterceptor interceptor)
     {
         _logger = logger;
-        var optionsValue = options.Value;
-        optionsValue.ThrowExceptionIfInvalid();
-        _listener = new TcpListener(optionsValue.GetIPAddress(), optionsValue.Port);
-
+        this.Options = options.Value;
+        this.Options.ThrowExceptionIfInvalid();
+        _listener = new TcpListener(this.Options.GetIPAddress(), this.Options.Port);
         if (interceptor != null)
         {
             this.OnRequestReceived += interceptor.Server_OnRequestReceived;
@@ -47,6 +49,7 @@ public class HttpProxyServer : IHttpProxyServer, IDisposable
     public Task StartAsync(CancellationToken cancellationToken)
     {
         _listener.Start();
+
         var thread = new Thread(() =>
         {
             while (!cancellationToken.IsCancellationRequested)
@@ -77,28 +80,36 @@ public class HttpProxyServer : IHttpProxyServer, IDisposable
         var from = tcpClient.Client.RemoteEndPoint;
 
         var stream = tcpClient.GetStream();
+
         try
         {
             var httpContext = new HttpContext(tcpClient);
-            await ProcessOn(key, httpContext);
-        }
-        catch (HttpRequestException e)
-        {
-            var bytes = e.StatusCode.GetResponse();
-            await stream.WriteAsync(bytes);
-            var text = e.StatusCode.GetResponseText();
-            _logger.LogError(e, "来自{from}的请求处理过程发生异常,已返回内容:{text}", from, text);
+            try
+            {
+                await ProcessOn(key, httpContext);
+            }
+            catch (HttpRequestException e)
+            {
+                var bytes = e.StatusCode.GetResponse();
+                await stream.WriteAsync(bytes);
+                var text = e.StatusCode.GetResponseText();
+                _logger.LogError(e, "来自{from}的请求处理过程发生异常,已返回内容:{text}", from, text);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "来自{from}的请求处理过程发生异常", from);
+            }
+            finally
+            {
+                //todo: 将context记录到日志系统
+                stopwatch.Stop();
+                tcpClient.Close();
+                tcpClient.Dispose();
+            }
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "来自{from}的请求处理过程发生异常", from);
-        }
-        finally
-        {
-            //todo: 将context记录到日志系统
-            stopwatch.Stop();
-            tcpClient.Close();
-            tcpClient.Dispose();
+            throw new HttpRequestException(HttpRequestError.ConnectionError, e.Message, e, HttpStatusCode.BadRequest);
         }
     }
 
@@ -127,16 +138,14 @@ public class HttpProxyServer : IHttpProxyServer, IDisposable
                 httpContext.Response.IsHandled = true;
                 client.Close();
             }
-            catch (Exception e)
+            catch (SocketException e)
             {
-                Console.WriteLine(e);
-                throw;
+                _logger.LogError(e, "代理处理请求过程发生异常, {text}, 错误代码{errorCode},网路错误代码{socketErrorCode}", e.Message,
+                    e.ErrorCode,
+                    e.SocketErrorCode.ToString());
+                throw new HttpRequestException(HttpRequestError.ConnectionError, e.Message, e,
+                    HttpStatusCode.GatewayTimeout);
             }
-            finally
-            {
-                
-            }
-            
         }
 
         OnResponseReceived?.Invoke(this, new HttpResponseReceivedEventArgs(httpContext));

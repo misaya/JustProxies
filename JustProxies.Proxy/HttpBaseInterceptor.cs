@@ -21,13 +21,13 @@ public class HttpBaseInterceptor(ILogger<HttpBaseInterceptor> logger) : IHttpInt
 
     public virtual Task Server_Started(IHttpProxyServer server, HttpProxyServerEventArgs e)
     {
-        logger.LogInformation("服务已启动");
+        logger.LogInformation("代理服务已启动,地址{address},端口{port}", server.Options.Address, server.Options.Port);
         return Task.CompletedTask;
     }
 
     public virtual Task Server_Stopped(IHttpProxyServer server, HttpProxyServerEventArgs e)
     {
-        logger.LogInformation("服务已启动");
+        logger.LogInformation("服务已停止");
         return Task.CompletedTask;
     }
 }

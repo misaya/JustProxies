@@ -10,4 +10,9 @@ public class RulePackage
     public bool IsEnabled { get; set; } = true;
     public RuleItems Rules { get; set; } = new();
     public RuleAction Action { get; set; } = new();
+
+    public override string ToString()
+    {
+        return System.Text.Json.JsonSerializer.Serialize(this);
+    }
 }
