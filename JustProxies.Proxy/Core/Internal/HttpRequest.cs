@@ -1,16 +1,22 @@
 using System.Diagnostics;
 using System.Net.Sockets;
+using System.Text;
 using JustProxies.Proxy.Exts;
+using NetworkStream = System.Net.Sockets.NetworkStream;
 
 namespace JustProxies.Proxy.Core.Internal;
 
 [DebuggerDisplay("{HttpMethod} {RawUrl}")]
 public class HttpRequest
 {
-    internal HttpRequest(NetworkStream requestStream)
+    #region privates
+
+    private int Position { get; set; }
+    private Version Version { get; set; } = null!;
+
+    private void Init(MemoryStream memoryStream)
     {
-        using var memoryStream = requestStream.ReadAll();
-        RequestRawData = memoryStream.ToArray();
+        TotalContent = memoryStream.ToArray();
         using var reader = new StreamReader(memoryStream);
         var requestLine = reader.ReadLine();
         Debug.WriteLine(requestLine);
@@ -20,50 +26,50 @@ public class HttpRequest
         Version = new Version(requestLineSplit[2].Split('/')[1]);
         if (HttpMethod == HttpMethod.Connect)
             Url = RawUrl.EndsWith("443")
-                ? new Uri("https://" + RawUrl)
-                : new Uri("http://" + RawUrl);
+                ? new Uri("https" + "://" + RawUrl)
+                : new Uri("http" + "://" + RawUrl);
         else
             Url = new Uri(RawUrl);
-
         while (reader.ReadLine() is { } headerLine &&
                !string.IsNullOrWhiteSpace(headerLine))
         {
             Headers.Add(headerLine);
-            Debug.WriteLine(headerLine);
         }
 
         Position = (int)memoryStream.Position;
         Body = reader.ReadToEnd();
     }
 
-    private int Position { get; }
-    public ReadOnlyMemory<byte> RequestRawData { get; }
-    public Version Version { get; }
-    public string RawUrl { get; private set; }
-    public Uri Url { get; private set; }
-    public string Body { get; }
-    public HttpMethod HttpMethod { get; }
-    public HttpRequestHeaders Headers { get; } = [];
+    #endregion
 
-    public ActivityTraceId TraceId { get; } = ActivityTraceId.CreateRandom();
 
-    public override string ToString()
+    internal HttpRequest(NetworkStream requestStream)
     {
-        return $"{HttpMethod} {RawUrl} HTTP/{Version}";
+        using var memoryStream = requestStream.ReadRequest();
+        Init(memoryStream);
     }
 
-    public HttpRequestMessage GetHttpRequestMessage()
-    {
-        var message = new HttpRequestMessage(this.HttpMethod, this.Url);
-        foreach (var header in this.Headers)
-        {
-            message.Headers.Add(header.Key, header.Value);
-        }
+    public HttpMethod HttpMethod { get; private set; } = null!;
+    public HttpRequestHeaders Headers { get; } = [];
+    public string RawUrl { get; private set; } = null!;
+    public Uri Url { get; private set; } = null!;
+    public string Body { get; private set; } = null!;
+    public ReadOnlyMemory<byte> TotalContent { get; private set; }
 
-        var data = this.RequestRawData.ToArray().Skip(this.Position).ToArray();
-        using var stream = new MemoryStream(data);
-        message.Content = new StreamContent(stream);
-        message.Version = this.Version;
-        return message;
+    public void UrlReWrite(Uri newUrl)
+    {
+        var headers = this.Headers
+            .Where(p => !p.Key.Equals("host", StringComparison.CurrentCultureIgnoreCase))
+            .Select(p => $"{p.Key}: {string.Join(";", p.Value)}").ToList();
+        headers.Add($"Host: {newUrl.Host}");
+        headers.Add($"Proxy: JustProxies");
+        var firstLine = $"{this.HttpMethod} {newUrl.PathAndQuery} HTTP/{this.Version}\n";
+        var headerLine = string.Join("\n", headers);
+        var request = Encoding.ASCII.GetBytes($"{firstLine}{headerLine}\n\n").ToList();
+        request.AddRange(TotalContent.ToArray().Skip(Position).ToArray());
+        using var memoryStream = new MemoryStream(request.ToArray());
+        Init(memoryStream);
+        this.Url = newUrl;
+        this.RawUrl = newUrl.PathAndQuery;
     }
 }

@@ -5,15 +5,15 @@ public enum RuleActionType
     /// <summary>
     /// 代理请求原请求
     /// </summary>
-    Default,
+    ByPass,
 
     /// <summary>
     /// 换URL发起请求，并返回请求内容
     /// </summary>
-    ProxyRedirect,
+    UrlReWrite,
 
     /// <summary>
     /// 返回自定义内容
     /// </summary>
-    ResponseCustomizeContent,
+    CustomizeResponseContent,
 }

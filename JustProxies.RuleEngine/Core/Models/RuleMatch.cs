@@ -1,6 +1,6 @@
 namespace JustProxies.RuleEngine.Core.Models;
 
-public enum RuleCondition
+public enum RuleMatch
 {
     /// <summary>
     /// 满足所有
@@ -8,12 +8,12 @@ public enum RuleCondition
     All,
 
     /// <summary>
-    /// 满足任一条件
+    /// 满足任意条件
     /// </summary>
     Any,
 
     /// <summary>
-    /// 不满足任一条件
+    /// 不满足任意条件
     /// </summary>
     None
 }

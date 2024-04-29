@@ -6,10 +6,5 @@ namespace JustProxies.Proxy.Core;
 
 public interface IHttpProxyServer : IHostedService
 {
-    event HttpProxyServerEventHandler OnStarted;
-    event HttpProxyServerEventHandler OnStopped;
-    event HttpRequestReceived OnRequestReceived;
-    event HttpResponseReceived OnResponseReceived;
-
     HttpProxyServerOptions Options { get; }
 }

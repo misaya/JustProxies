@@ -1,5 +1,6 @@
 using System.Net.Sockets;
 using JustProxies.Proxy.Exts;
+using NetworkStream = System.Net.Sockets.NetworkStream;
 
 namespace JustProxies.Proxy.Core.Internal;
 

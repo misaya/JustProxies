@@ -17,23 +17,17 @@ public class HttpProxyServer : IHttpProxyServer, IDisposable
     private readonly ConcurrentDictionary<int, TcpClient> _clientPool = new();
     private readonly TcpListener _listener;
     private readonly ILogger<HttpProxyServer> _logger;
-
-    public HttpProxyServerOptions Options { get; private set; }
+    private readonly IHttpInterceptor _interceptor;
+    public HttpProxyServerOptions Options { get; }
 
     public HttpProxyServer(ILogger<HttpProxyServer> logger, IOptions<HttpProxyServerOptions> options,
         IHttpInterceptor interceptor)
     {
         _logger = logger;
+        _interceptor = interceptor;
         this.Options = options.Value;
         this.Options.ThrowExceptionIfInvalid();
         _listener = new TcpListener(this.Options.GetIPAddress(), this.Options.Port);
-        if (interceptor != null)
-        {
-            this.OnRequestReceived += interceptor.Server_OnRequestReceived;
-            this.OnResponseReceived += interceptor.Server_OnResponseReceived;
-            this.OnStarted += interceptor.Server_Started;
-            this.OnStopped += interceptor.Server_Stopped;
-        }
     }
 
     public void Dispose()
@@ -41,15 +35,9 @@ public class HttpProxyServer : IHttpProxyServer, IDisposable
         _listener.Dispose();
     }
 
-    public event HttpProxyServerEventHandler? OnStarted;
-    public event HttpProxyServerEventHandler? OnStopped;
-    public event HttpRequestReceived? OnRequestReceived;
-    public event HttpResponseReceived? OnResponseReceived;
-
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         _listener.Start();
-
         var thread = new Thread(() =>
         {
             while (!cancellationToken.IsCancellationRequested)
@@ -61,26 +49,21 @@ public class HttpProxyServer : IHttpProxyServer, IDisposable
             }
         });
         thread.Start();
-        OnStarted?.Invoke(this, HttpProxyServerEventArgs.CreateStartedEvent());
-        return Task.CompletedTask;
+        await _interceptor.Server_Started(this, HttpProxyServerEventArgs.CreateStartedEvent());
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
         _listener.Stop();
-        OnStopped?.Invoke(this, HttpProxyServerEventArgs.CreateStoppedEvent());
-        return Task.CompletedTask;
+        await _interceptor.Server_Stopped(this, HttpProxyServerEventArgs.CreateStoppedEvent());
     }
 
     private async void HandleTcpClient(object? state)
     {
         if (state is not int key || !_clientPool.TryGetValue(key, out var tcpClient)) return;
-
         var stopwatch = Stopwatch.StartNew();
         var from = tcpClient.Client.RemoteEndPoint;
-
         var stream = tcpClient.GetStream();
-
         try
         {
             var httpContext = new HttpContext(tcpClient);
@@ -101,7 +84,6 @@ public class HttpProxyServer : IHttpProxyServer, IDisposable
             }
             finally
             {
-                //todo: 将context记录到日志系统
                 stopwatch.Stop();
                 tcpClient.Close();
                 tcpClient.Dispose();
@@ -115,16 +97,15 @@ public class HttpProxyServer : IHttpProxyServer, IDisposable
 
     private async Task ProcessOn(int key, HttpContext httpContext)
     {
-        OnRequestReceived?.Invoke(this, new HttpRequestReceivedEventArgs(httpContext));
+        await _interceptor.Server_OnRequestReceived(this, new HttpRequestReceivedEventArgs(httpContext));
         if (!httpContext.Response.IsHandled)
         {
             try
             {
                 using var client = new TcpClient(httpContext.Request.Url.Host, httpContext.Request.Url.Port);
                 await using var stream = client.GetStream();
-                await stream.WriteAsync(httpContext.Request.RequestRawData.ToArray());
-                //没有拦截，则实时的传输流，不经过内存缓存，提交性能；
-                if (OnResponseReceived == null)
+                await stream.WriteAsync(httpContext.Request.TotalContent.ToArray());
+                if (!this.Options.EnableBuffer)
                 {
                     httpContext.Response.LinkExternalStream(stream);
                     httpContext.Response.IsHandled = true;
@@ -132,8 +113,7 @@ public class HttpProxyServer : IHttpProxyServer, IDisposable
                     return;
                 }
 
-                //存在拦截，则先将数据读取到缓冲区中，触发事件（事件中允许对缓存区数据进行篡改），最终传输到原客户端流；
-                using var memoryStream = stream.ReadAll();
+                using var memoryStream = stream.ReadResponse();
                 httpContext.Response.ResponseRawData = memoryStream.ToArray();
                 httpContext.Response.IsHandled = true;
                 client.Close();
@@ -148,7 +128,7 @@ public class HttpProxyServer : IHttpProxyServer, IDisposable
             }
         }
 
-        OnResponseReceived?.Invoke(this, new HttpResponseReceivedEventArgs(httpContext));
+        await _interceptor.Server_OnResponseReceived(this, new HttpResponseReceivedEventArgs(httpContext));
         await httpContext.Response.SubmitAsync();
     }
 }

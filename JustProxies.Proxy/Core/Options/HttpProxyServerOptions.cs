@@ -8,6 +8,7 @@ public class HttpProxyServerOptions
     public string NetworkInterface { get; init; } = string.Empty;
     public string Address { get; init; } = string.Empty;
     public int Port { get; init; } = 0;
+    public bool EnableBuffer { get; init; } = true;
 
     public IPAddress GetIPAddress()
     {

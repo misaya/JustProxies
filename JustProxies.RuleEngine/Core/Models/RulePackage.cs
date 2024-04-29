@@ -15,4 +15,25 @@ public class RulePackage
     {
         return System.Text.Json.JsonSerializer.Serialize(this);
     }
+
+    public bool IsMatch(HttpContext context)
+    {
+        var results = new List<RuleItemMatchResult>();
+        foreach (var condition in this.Rules)
+        {
+            var isMatch = condition.IsMatch(context);
+            results.Add(new RuleItemMatchResult(condition, isMatch));
+            if (isMatch && this.Rules.Match == RuleMatch.Any)
+            {
+                return true;
+            }
+        }
+
+        return this.Rules.Match switch
+        {
+            RuleMatch.Any => results.Any(p => p.IsMatched),
+            RuleMatch.All => results.All(p => p.IsMatched),
+            RuleMatch.None => results.All(p => !p.IsMatched),
+        };
+    }
 }
