@@ -26,56 +26,63 @@ public static class NetworkStreamExt
         var memoryStream = new MemoryStream();
 
         // 读取HTTP响应
-        using var reader = new StreamReader(networkStream, Encoding.UTF8);
-        var statusLine = reader.ReadLine()!;
-        memoryStream.Write(Encoding.ASCII.GetBytes(statusLine));
-        memoryStream.Write("\n"u8);
-        if (!statusLine.StartsWith("HTTP/1.1 200"))
+        var statusLine = networkStream.ReadLine()!;
+        memoryStream.Write(statusLine);
+        if (!Encoding.ASCII.GetString(statusLine).StartsWith("HTTP/1.1 200"))
         {
             memoryStream.Position = 0;
             return memoryStream;
         }
 
         var isChunked = false;
-        while (reader.ReadLine() is { } header && header.Length > 0)
+        while (networkStream.ReadLine() is { } header)
         {
-            if (header.StartsWith("Transfer-Encoding: chunked"))
+            memoryStream.Write(header);
+            var text = Encoding.ASCII.GetString(header);
+            if (text.StartsWith("Transfer-Encoding: chunked"))
             {
                 isChunked = true;
             }
 
-            memoryStream.Write(Encoding.ASCII.GetBytes(header));
-            memoryStream.Write("\n"u8);
+            if (text.Trim().Length == 0)
+            {
+                break;
+            }
         }
-
-        memoryStream.Write("\n"u8);
 
         if (isChunked)
         {
             while (true)
             {
-                var chunkSizeLine = reader.ReadLine()!;
-                memoryStream.Write(Encoding.ASCII.GetBytes(chunkSizeLine));
-                memoryStream.Write("\r\n"u8);
-                if (int.TryParse(chunkSizeLine, NumberStyles.HexNumber, null, out var chunkSize))
+                var chunkSizeBytes = networkStream.ReadLine();
+                memoryStream.Write(chunkSizeBytes);
+                var chunkSizeHex = Encoding.ASCII.GetString(chunkSizeBytes);
+                if (chunkSizeHex.Trim().Length == 0)
                 {
-                    Debug.WriteLine($"Start Read chunkSize:{chunkSize}");
+                   continue;
+                }
+
+                if (int.TryParse(chunkSizeHex, NumberStyles.HexNumber, null,
+                        out var chunkSize))
+                {
+                    if (chunkSize == 0)
+                    {
+                        break;
+                    }
+
+                    Debug.WriteLine($"Chunk Size:{chunkSize}");
                     while (chunkSize > 0)
                     {
                         var buffer = new byte[chunkSize];
                         var length = networkStream.Read(buffer, 0, buffer.Length);
                         memoryStream.Write(buffer, 0, length);
-                        if (length != chunkSize)
-                        {
-                            Debug.WriteLine($"Loop - length:{length}, chunkSize:{chunkSize}");
-                        }
-
+                        Debug.WriteLine($"----> Read length:{length}");
                         chunkSize -= length;
                     }
                 }
                 else
                 {
-                    Debug.WriteLine($"Error - {chunkSizeLine}");
+                    Debug.WriteLine($"Error - {chunkSizeHex}");
                 }
             }
         }
@@ -108,5 +115,29 @@ public static class NetworkStreamExt
 
         memoryStream.Position = 0;
         return memoryStream;
+    }
+
+    public static Byte[] ReadLine(this NetworkStream stream)
+    {
+        var total = new List<byte>();
+        var buffer = new byte[1];
+
+        while (true)
+        {
+            while (true)
+            {
+                var length = stream.Read(buffer, 0, 1);
+                if (length == 1)
+                {
+                    break;
+                }
+            }
+
+            total.Add(buffer[0]);
+            if (buffer[0] == '\n')
+            {
+                return total.ToArray();
+            }
+        }
     }
 }
