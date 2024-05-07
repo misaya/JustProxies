@@ -28,57 +28,7 @@
 </div>
 
 @code {
-    private Sidebar _sidebar = null!;
-    private IEnumerable<NavItem> _navItems = null!;
-    private readonly List<ToastMessage> _messages = [];
-
-    private bool IsEnabled
-    {
-        get => HttpProxyTool.GetWebProxy().IsEnabled;
-        set => SwitchWebProxy(value);
-    }
-
-    private void SwitchWebProxy(bool isEnabled)
-    {
-        var result = false;
-        if (isEnabled)
-        {
-            HttpProxyTool.SetWebProxy();
-            result = HttpProxyTool.EnableProxy();
-        }
-        else
-        {
-            result = HttpProxyTool.DisableProxy();
-        }
-
-        var info = HttpProxyTool.GetWebProxy();
-        _messages.Add(new ToastMessage
-        {
-            Type = result ? ToastType.Success : ToastType.Info,
-            Title = (isEnabled ? "启动" : "关闭") + "本地代理成功",
-            HelpText = DateTime.Now.ToString("HH:mm:ss"),
-            Message = info.ToString()
-        });
-        StateHasChanged();
-    }
-
-    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
-    {
-        if (_navItems is null)
-            _navItems = GetNavItems();
-        return await Task.FromResult(request.ApplyTo(_navItems));
-    }
-
-    private IEnumerable<NavItem> GetNavItems()
-    {
-        _navItems = new List<NavItem>
-        {
-            new() { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match = NavLinkMatch.All },
-            new() { Id = "2", Href = "/counter", IconName = IconName.PlusSquareFill, Text = "Counter" },
-            new() { Id = "3", Href = "/weather", IconName = IconName.Table, Text = "Fetch Data" }
-        };
-        return _navItems;
-    }
+ 
 
 }
 

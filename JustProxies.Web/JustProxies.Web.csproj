@@ -7,33 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\JustProxies.Integration\JustProxies.Integration.csproj" />
         <ProjectReference Include="..\JustProxies.RuleEngine\JustProxies.RuleEngine.csproj" />
         <ProjectReference Include="..\JustProxies.Proxy\JustProxies.Proxy.csproj"/>
     </ItemGroup>
-
+    
     <ItemGroup>
-        <_ContentIncludedByDefault Remove="wwwroot\bootstrap\bootstrap.min.css"/>
-        <_ContentIncludedByDefault Remove="wwwroot\bootstrap\bootstrap.min.css.map"/>
+      <PackageReference Include="BootstrapBlazor" Version="8.5.4" />
+      <PackageReference Include="BootstrapBlazor.FontAwesome" Version="8.0.4" />
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="obj\Debug\net8.0\"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="obj\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Remove="obj\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Remove="obj\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="obj\**" />
-    </ItemGroup>
-
+   
 </Project>

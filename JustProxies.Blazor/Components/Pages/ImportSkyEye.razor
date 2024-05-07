@@ -1,0 +1,41 @@
+@page "/import/skyeye"
+@using JustProxies.Integration.Core
+@using JustProxies.Integration.SkyEye
+@inject ISkyEyeIntegration SkyEyeIntegration
+
+<PageTitle>请求导入</PageTitle>
+
+<Card>
+    <BodyTemplate>
+        <p>
+            <b>行显示 3 个，采用 <code>Row</code></b>
+        </p>
+        <ValidateForm Model="Queries">
+            <Row ItemsPerRow="ItemsPerRow.Three" RowType="RowType.Inline">
+                <BootstrapInput PlaceHolder="请输入模块" @bind-Value="@Queries.Module"
+                                DisplayText="模块" ShowLabel="true"/>
+                <BootstrapInput PlaceHolder="请输入分类" @bind-Value="@Queries.Category"
+                                DisplayText="分类" ShowLabel="true"/>
+                <BootstrapInput PlaceHolder="请输入子分类" @bind-Value="@Queries.SubCategory"
+                                DisplayText="子分类" ShowLabel="true"/>
+                <BootstrapInput PlaceHolder="请输入过滤1" @bind-Value="@Queries.Filter1"
+                                DisplayText="过滤1" ShowLabel="true"/>
+                <BootstrapInput PlaceHolder="请输入过滤2" @bind-Value="@Queries.Filter2"
+                                DisplayText="过滤2" ShowLabel="true"/>
+            </Row>
+        </ValidateForm>
+    </BodyTemplate>
+</Card>
+
+
+@code {
+
+    private List<string> _appUkList = new List<string>();
+    private SkyEyeQueries Queries { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this._appUkList = await SkyEyeIntegration.QueryAppUkListAsync();
+    }
+
+}

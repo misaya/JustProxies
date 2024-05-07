@@ -2,13 +2,13 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustProxies.Proxy", "JustProxies.Proxy\JustProxies.Proxy.csproj", "{08CE7E03-E099-46A2-BBD5-2136293BE080}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustProxies.Web", "JustProxies.Web\JustProxies.Web.csproj", "{7FB6C423-4B19-4F07-AE73-712BCC24DC8E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustProxies.RuleEngine", "JustProxies.RuleEngine\JustProxies.RuleEngine.csproj", "{0E85DBA6-88F8-40C0-99E9-E261DCF192AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustProxies.Test", "JustProxies.Test\JustProxies.Test.csproj", "{82961FB8-B363-4944-B277-DBC080326057}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustProxies.Common", "JustProxies.Common\JustProxies.Common.csproj", "{26CDF4D8-87D1-43A8-974B-F09E2748CEB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustProxies.Integration", "JustProxies.Integration\JustProxies.Integration.csproj", "{861B0ADA-91F5-47C7-B588-DB0DF07CC22D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustProxies.Blazor", "JustProxies.Blazor\JustProxies.Blazor.csproj", "{84FC9422-C8F3-40B5-8E8B-AC3BA4B00208}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,21 +20,21 @@ Global
 		{08CE7E03-E099-46A2-BBD5-2136293BE080}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08CE7E03-E099-46A2-BBD5-2136293BE080}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08CE7E03-E099-46A2-BBD5-2136293BE080}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7FB6C423-4B19-4F07-AE73-712BCC24DC8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7FB6C423-4B19-4F07-AE73-712BCC24DC8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7FB6C423-4B19-4F07-AE73-712BCC24DC8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7FB6C423-4B19-4F07-AE73-712BCC24DC8E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0E85DBA6-88F8-40C0-99E9-E261DCF192AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0E85DBA6-88F8-40C0-99E9-E261DCF192AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E85DBA6-88F8-40C0-99E9-E261DCF192AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E85DBA6-88F8-40C0-99E9-E261DCF192AF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{82961FB8-B363-4944-B277-DBC080326057}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{82961FB8-B363-4944-B277-DBC080326057}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{82961FB8-B363-4944-B277-DBC080326057}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{82961FB8-B363-4944-B277-DBC080326057}.Release|Any CPU.Build.0 = Release|Any CPU
 		{26CDF4D8-87D1-43A8-974B-F09E2748CEB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{26CDF4D8-87D1-43A8-974B-F09E2748CEB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26CDF4D8-87D1-43A8-974B-F09E2748CEB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26CDF4D8-87D1-43A8-974B-F09E2748CEB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{861B0ADA-91F5-47C7-B588-DB0DF07CC22D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{861B0ADA-91F5-47C7-B588-DB0DF07CC22D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{861B0ADA-91F5-47C7-B588-DB0DF07CC22D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{861B0ADA-91F5-47C7-B588-DB0DF07CC22D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84FC9422-C8F3-40B5-8E8B-AC3BA4B00208}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84FC9422-C8F3-40B5-8E8B-AC3BA4B00208}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84FC9422-C8F3-40B5-8E8B-AC3BA4B00208}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84FC9422-C8F3-40B5-8E8B-AC3BA4B00208}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

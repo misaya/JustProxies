@@ -1,0 +1,58 @@
+﻿@page "/SkyEye"
+@using JustProxies.Integration.Core
+@using JustProxies.Integration.SkyEye
+@attribute [StreamRendering]
+@inject ISkyEyeIntegration SkyEyeIntegration
+<PageTitle>天网日志</PageTitle>
+
+<h1>天网日志</h1>
+
+@if (_skyEyeContents == null)
+{
+    <p>
+        <em>加载中...</em>
+    </p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>时间</th>
+            <th>模块</th>
+            <th>分类</th>
+            <th>子分类</th>
+            <th>过滤1</th>
+            <th>过滤2</th>
+            <th>跟踪ID</th>
+            <th>日志</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var forecast in _skyEyeContents)
+        {
+            <tr>
+                <td>@forecast.LogTime</td>
+                <td>@forecast.Module</td>
+                <td>@forecast.Category</td>
+                <td>@forecast.SubCategory</td>
+                <td>@forecast.Filter1</td>
+                <td>@forecast.Filter2</td>
+                <td>@forecast.ContextId</td>
+                <td>@forecast.Msg</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<SkyEyeContent> _skyEyeContents;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _skyEyeContents = await SkyEyeIntegration.QueryAsync("flight.netcore.financeclear");
+        this.ShouldRender();
+    }
+
+}

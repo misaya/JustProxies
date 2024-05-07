@@ -1,11 +1,9 @@
-﻿using System.Net.Sockets;
-using System.Text;
+﻿using System.Text;
 using JustProxies.Common;
 using JustProxies.Proxy;
 using JustProxies.Proxy.Core;
 using JustProxies.Proxy.Core.Events;
 using JustProxies.Proxy.Core.Internal;
-using JustProxies.Proxy.Exts;
 using JustProxies.RuleEngine.Core;
 using JustProxies.RuleEngine.Core.Models;
 using Microsoft.Extensions.Logging;
@@ -35,7 +33,7 @@ public class HttpInterceptor(ILogger<HttpInterceptor> logger, IRuleManagement ru
         return Task.CompletedTask;
     }
 
-    private async Task ApplyRuleAction(RulePackage package, HttpContext context)
+    private Task ApplyRuleAction(RulePackage package, HttpContext context)
     {
         switch (package.Action.ActionType)
         {
@@ -70,5 +68,7 @@ public class HttpInterceptor(ILogger<HttpInterceptor> logger, IRuleManagement ru
                 context.Response.IsHandled = false;
                 break;
         }
+
+        return Task.CompletedTask;
     }
 }
