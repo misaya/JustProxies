@@ -34,6 +34,7 @@ public class RulePackage
             RuleMatch.Any => results.Any(p => p.IsMatched),
             RuleMatch.All => results.All(p => p.IsMatched),
             RuleMatch.None => results.All(p => !p.IsMatched),
+            _ => throw new NotImplementedException(),
         };
     }
 }
