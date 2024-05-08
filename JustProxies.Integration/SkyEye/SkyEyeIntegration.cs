@@ -13,23 +13,17 @@ public class SkyEyeIntegration(
 {
     private readonly SkyEyeOptions _options = options.Value;
 
-    public Task<List<string>> QueryAppUkListAsync()
-    {
-        var result = this._options.AppList.Select(p => p.AppUk).ToList();
-        return Task.FromResult(result);
-    }
-
-    public async Task<List<SkyEyeContent>> QueryAsync(string appUk, SkyEyeQueries query)
+    public async Task<SkyEyeRespRoot> QueryAsync(SkyEyeQueries query)
     {
         try
         {
-            var app = this._options.AppList.Find(p => p.AppUk == appUk)!;
-            if (app.IsNull())
+            if (query.AppIds.IsEmpty())
             {
-                throw new ArgumentOutOfRangeException(nameof(appUk), $"{appUk}未配置appId及token");
+                foreach (var app in this._options.AppList)
+                {
+                    query.AddApp(app.AppId, app.Token);
+                }
             }
-
-            query.AddApp(app.AppId, app.Token);
 
             var httpclient = httpClientFactory.CreateClient();
             httpclient.BaseAddress = new Uri(this._options.BaseUrl);
@@ -39,14 +33,7 @@ public class SkyEyeIntegration(
             var text = await result.Content.ReadAsStringAsync();
 
             var resp = text.ToObject<SkyEyeRespRoot>(true);
-            if (resp!.Code == 200 && resp.Result is { Count: > 0, List.Count: > 0 })
-            {
-                return resp.Result.List!;
-            }
-            else
-            {
-                throw new Exception($"返回内容:{text}");
-            }
+            return resp!;
         }
         catch (Exception e)
         {

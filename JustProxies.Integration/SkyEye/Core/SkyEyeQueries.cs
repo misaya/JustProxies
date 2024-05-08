@@ -98,12 +98,12 @@ public class SkyEyeQueries : SkyEyeQueriesRoot
     /// <summary>
     /// 日志开始时间，务必带毫秒数！！yyyy-MM-dd HH:mm:ss.SSS，小于该时间
     /// </summary>
-    public string BeginTime { get; set; } = string.Empty;
+    public string BeginTime { get; set; }
 
     /// <summary>
     /// 日志结束时间，务必带毫秒数！！yyyy-MM-dd HH:mm:ss.SSS，大于等于该时间
     /// </summary>
-    public string EndTime { get; set; } = string.Empty;
+    public string EndTime { get; set; }
 
     /// <summary>
     /// 向下分页

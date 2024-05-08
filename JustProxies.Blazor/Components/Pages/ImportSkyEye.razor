@@ -2,14 +2,13 @@
 @using JustProxies.Integration.Core
 @using JustProxies.Integration.SkyEye
 @inject ISkyEyeIntegration SkyEyeIntegration
+@rendermode InteractiveServer
+@attribute [StreamRendering]
 
 <PageTitle>请求导入</PageTitle>
 
 <Card>
     <BodyTemplate>
-        <p>
-            <b>行显示 3 个，采用 <code>Row</code></b>
-        </p>
         <ValidateForm Model="Queries">
             <Row ItemsPerRow="ItemsPerRow.Three" RowType="RowType.Inline">
                 <BootstrapInput PlaceHolder="请输入模块" @bind-Value="@Queries.Module"
@@ -22,20 +21,82 @@
                                 DisplayText="过滤1" ShowLabel="true"/>
                 <BootstrapInput PlaceHolder="请输入过滤2" @bind-Value="@Queries.Filter2"
                                 DisplayText="过滤2" ShowLabel="true"/>
+                <Button OnClick="@ButtonClick" Color="Color.Primary">查询日志</Button>
             </Row>
         </ValidateForm>
     </BodyTemplate>
 </Card>
+<Divider></Divider>
+<Table TItem="SkyEyeLogContent" Items="@QueryResults" RenderMode="TableRenderMode.Table"
+       IsBordered="true" IsStriped="true" ScrollMode="ScrollMode.Virtual"
+       TableSize="TableSize.Normal" IsFixedHeader="true" IsPagination="true"
+       Height="670">
+    <TableColumns>
+        <TableColumn @bind-Field="@context.LogTime" Text="时间" Width="180"/>
+        <TableColumn @bind-Field="@context.Priority" Text="日志级别" Width="80">
+            <Template Context="v">
+                @switch (v.Value)
+                {
+                    case SkyEyeLogLevel.Fatal:
+                        <Tag Color="Color.Danger">
+                            致命
+                        </Tag>
+                        break;
+                    case SkyEyeLogLevel.Error:
+                        <Tag Color="Color.Danger">
+                            错误
+                        </Tag>
+                        break;
+                    case SkyEyeLogLevel.Warn:
+                        <Tag Color="Color.Warning">
+                            警告
+                        </Tag>
+                        break;
+                    case SkyEyeLogLevel.Info:
+                        <Tag Color="Color.Primary">
+                            信息
+                        </Tag>
+                        break;
+                    case SkyEyeLogLevel.Debug:
+                        <Tag Color="Color.Info">
+                            调试
+                        </Tag>
+                        break;
+                    default:
+                        <Tag Color="Color.Info">
+                            信息
+                        </Tag>
+                        break;
+                }
 
+            </Template>
+        </TableColumn>
+        <TableColumn @bind-Field="@context.Msg" Text="日志消息"
+                     TextWrap="true"
+                     Filterable="true"/>
+        <TableColumn Text="操作" @bind-Field="@context.Id" Width="100">
+            <Template Context="v">
+                <Button class="btn btn-primary" Size="Size.ExtraSmall">
+                    可视化
+                </Button>
+            </Template>
+        </TableColumn>
+    </TableColumns>
+</Table>
 
 @code {
 
-    private List<string> _appUkList = new List<string>();
     private SkyEyeQueries Queries { get; set; } = new();
+    private List<SkyEyeLogContent> QueryResults { get; set; } = new();
 
-    protected override async Task OnInitializedAsync()
+
+    private async Task ButtonClick()
     {
-        this._appUkList = await SkyEyeIntegration.QueryAppUkListAsync();
+        var resp = await SkyEyeIntegration.QueryAsync(this.Queries);
+        if (resp!.Code == 200 && resp.Result is { Count: > 0, List.Count: > 0 })
+        {
+            QueryResults = resp.Result.List!;
+        }
     }
 
 }

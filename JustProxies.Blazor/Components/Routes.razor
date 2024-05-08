@@ -1,14 +1,6 @@
-﻿<BootstrapBlazorRoot>
-    <Router AppAssembly="typeof(Program).Assembly">
-        <Found Context="routeData">
-            <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)"/>
-            <FocusOnNavigate RouteData="routeData" Selector="h1"/>
-        </Found>
-        <NotFound>
-            <PageTitle>Not found</PageTitle>
-            <LayoutView Layout="typeof(Layout.MainLayout)">
-                <p> 正在玩命开发中 ...</p>
-            </LayoutView>
-        </NotFound>
-    </Router>
-</BootstrapBlazorRoot>
+﻿<Router AppAssembly="typeof(Program).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)"/>
+        <FocusOnNavigate RouteData="routeData" Selector="h1"/>
+    </Found>
+</Router>
