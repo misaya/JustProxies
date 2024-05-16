@@ -9,7 +9,7 @@
     <ItemGroup>
         <ProjectReference Include="..\JustProxies.Integration\JustProxies.Integration.csproj" />
         <ProjectReference Include="..\JustProxies.RuleEngine\JustProxies.RuleEngine.csproj" />
-        <ProjectReference Include="..\JustProxies.Proxy\JustProxies.Proxy.csproj"/>
+        <ProjectReference Include="..\JustProxies.Proxy\JustProxies.Proxy.csproj" />
     </ItemGroup>
     
     <ItemGroup>
@@ -21,6 +21,12 @@
       <_ContentIncludedByDefault Remove="Components\Pages\import\skyeye.cshtml" />
       <_ContentIncludedByDefault Remove="wwwroot\bootstrap\bootstrap.min.css" />
       <_ContentIncludedByDefault Remove="wwwroot\bootstrap\bootstrap.min.css.map" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <None Update="list.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
     
 </Project>

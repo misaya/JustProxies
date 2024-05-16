@@ -1,6 +1,9 @@
 @page "/import/skyeye"
 @using JustProxies.Integration.Core
 @using JustProxies.Integration.SkyEye
+@using System.Text.Json.Nodes
+@using System.Text.Encodings.Web
+@using System.Text.Unicode
 @inject ISkyEyeIntegration SkyEyeIntegration
 @rendermode InteractiveServer
 @attribute [StreamRendering]
@@ -97,11 +100,64 @@
 
     private async Task ButtonClick()
     {
-        var resp = await SkyEyeIntegration.QueryAsync(this.Queries);
+        // var resp = await SkyEyeIntegration.QueryAsync(this.Queries);
+        // if (resp!.Code == 200 && resp.Result is { Count: > 0, List.Count: > 0 })
+        // {
+        //     QueryResults = resp.Result.List!;
+        // }
+
+        var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "list.txt");
+        var query = new SkyEyeQueries();
+        query.Module = "Customer";
+        query.Category = "PaySuccess";
+        query.SubCategory = "SendMessageAsync";
+        var list = File.ReadAllLines(path);
+        var data = new Dictionary<string, string>();
+        foreach (var line in list)
+        {
+            var ct = line.Split(' ')[0];
+            var refId = line.Split(' ')[1];
+            data.TryAdd(ct, refId);
+            query.Filter2List.Add(ct);
+        }
+        var resp = await SkyEyeIntegration.QueryAsync(query);
         if (resp!.Code == 200 && resp.Result is { Count: > 0, List.Count: > 0 })
         {
-            QueryResults = resp.Result.List!;
+            var opt = new System.Text.Json.JsonSerializerOptions
+                {
+                    Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
+                    WriteIndented = true
+                };
+            foreach (var result in resp.Result.List)
+            {
+                var content = result.Msg.Replace("\\n\\n", "|").Split("|");
+                var reqJson = content[4].Replace("【消息体】", "").Trim();
+                var obj = JsonObject.Parse(reqJson)!.AsObject();
+                var refId = data[result.Filter2].Trim();
+                obj["SaleRefId"] = JsonValue.Create(refId);
+                reqJson = obj.ToJsonString(opt);
+
+                result.Msg = reqJson;
+
+                HttpClient client = new HttpClient();
+                var aa = await client.PostAsJsonAsync("http://finance.fly.17usoft.com/clear/api/HttpMQ/SendMessage", new
+                {
+                    Topic = "scs_topic_inlandflight",
+                    Tag = "CustomerOrderTag",
+                    Msg = reqJson,
+                    SerialId = result.Filter2
+                }, opt);
+
+                aa.EnsureSuccessStatusCode();
+
+                result.Msg = result.Msg + "\r\n" + await aa.Content.ReadAsStringAsync();
+
+                QueryResults.Add(result);
+            }
         }
+
+
     }
 
 }
+

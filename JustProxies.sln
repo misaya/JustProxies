@@ -1,14 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustProxies.Proxy", "JustProxies.Proxy\JustProxies.Proxy.csproj", "{08CE7E03-E099-46A2-BBD5-2136293BE080}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JustProxies.Proxy", "JustProxies.Proxy\JustProxies.Proxy.csproj", "{08CE7E03-E099-46A2-BBD5-2136293BE080}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustProxies.RuleEngine", "JustProxies.RuleEngine\JustProxies.RuleEngine.csproj", "{0E85DBA6-88F8-40C0-99E9-E261DCF192AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JustProxies.RuleEngine", "JustProxies.RuleEngine\JustProxies.RuleEngine.csproj", "{0E85DBA6-88F8-40C0-99E9-E261DCF192AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustProxies.Common", "JustProxies.Common\JustProxies.Common.csproj", "{26CDF4D8-87D1-43A8-974B-F09E2748CEB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JustProxies.Common", "JustProxies.Common\JustProxies.Common.csproj", "{26CDF4D8-87D1-43A8-974B-F09E2748CEB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustProxies.Integration", "JustProxies.Integration\JustProxies.Integration.csproj", "{861B0ADA-91F5-47C7-B588-DB0DF07CC22D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JustProxies.Integration", "JustProxies.Integration\JustProxies.Integration.csproj", "{861B0ADA-91F5-47C7-B588-DB0DF07CC22D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustProxies.Blazor", "JustProxies.Blazor\JustProxies.Blazor.csproj", "{84FC9422-C8F3-40B5-8E8B-AC3BA4B00208}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JustProxies.Blazor", "JustProxies.Blazor\JustProxies.Blazor.csproj", "{84FC9422-C8F3-40B5-8E8B-AC3BA4B00208}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{C34A9D6B-D816-4382-81E6-E1D3834F98F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +41,15 @@ Global
 		{84FC9422-C8F3-40B5-8E8B-AC3BA4B00208}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84FC9422-C8F3-40B5-8E8B-AC3BA4B00208}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84FC9422-C8F3-40B5-8E8B-AC3BA4B00208}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C34A9D6B-D816-4382-81E6-E1D3834F98F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C34A9D6B-D816-4382-81E6-E1D3834F98F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C34A9D6B-D816-4382-81E6-E1D3834F98F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C34A9D6B-D816-4382-81E6-E1D3834F98F3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A86233E2-0B38-43A5-98E2-7354BE3B5227}
 	EndGlobalSection
 EndGlobal
