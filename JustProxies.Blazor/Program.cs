@@ -1,6 +1,4 @@
 using JustProxies.Blazor.Components;
-using JustProxies.Integration.Core;
-using JustProxies.Integration.SkyEye;
 using JustProxies.Proxy;
 using JustProxies.Proxy.Core;
 using JustProxies.Proxy.Core.Options;
@@ -18,15 +16,12 @@ builder.Configuration
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true);
 builder.Services.Configure<HttpProxyServerOptions>(
     builder.Configuration.GetSection(HttpProxyServerOptions.OptionsName));
-builder.Services.Configure<SkyEyeOptions>(
-    builder.Configuration.GetSection(SkyEyeOptions.OptionsName));
 
 #endregion
 
 #region 处理依赖注入
 
 builder.Services.AddHttpClient();
-builder.Services.AddScoped<ISkyEyeIntegration, SkyEyeIntegration>();
 builder.Services.AddSingleton<IHttpProxyTool, HttpProxyTool>();
 builder.Services.AddSingleton<IRuleManagement, RuleManagement>();
 builder.Services.AddSingleton<IHttpInterceptor, HttpInterceptor>();

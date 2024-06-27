@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JustProxies.Integration", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JustProxies.Blazor", "JustProxies.Blazor\JustProxies.Blazor.csproj", "{84FC9422-C8F3-40B5-8E8B-AC3BA4B00208}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{C34A9D6B-D816-4382-81E6-E1D3834F98F3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,10 +39,6 @@ Global
 		{84FC9422-C8F3-40B5-8E8B-AC3BA4B00208}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84FC9422-C8F3-40B5-8E8B-AC3BA4B00208}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84FC9422-C8F3-40B5-8E8B-AC3BA4B00208}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C34A9D6B-D816-4382-81E6-E1D3834F98F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C34A9D6B-D816-4382-81E6-E1D3834F98F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C34A9D6B-D816-4382-81E6-E1D3834F98F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C34A9D6B-D816-4382-81E6-E1D3834F98F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
